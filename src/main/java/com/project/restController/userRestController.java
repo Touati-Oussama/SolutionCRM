@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.entities.Sepicialite;
+import com.project.entities.Societe;
 import com.project.request.ClientModel;
 import com.project.request.StaffModel;
 import com.project.response.CustomerDTO;
@@ -36,7 +37,9 @@ import com.project.services.SpecialiteService;
 import com.project.entities.ERole;
 import com.project.entities.Role;
 import com.project.entities.User;
+import com.project.entities.VerificationResponsable;
 import com.project.repos.RoleRepository;
+import com.project.repos.VerificationResponsableRepos;
 import com.project.services.ImageStorageService;
 import com.project.services.UserService;
 
@@ -53,6 +56,8 @@ public class userRestController {
 	@Autowired
 	SpecialiteService specialiteService;
 	
+	@Autowired
+	VerificationResponsableRepos verificationResponsableRepos;
 	@Autowired 
 	ReclamationService reclamationService;
 	
@@ -118,7 +123,31 @@ public class userRestController {
 		if(user == null)
 			return null;
 		user.setEnabled(enabled);
-		return  ResponseEntity.ok(userService.saveUser(user));
+		
+		if (!enabled) {
+			Societe s = societeService.findByResponsable(user);
+			s.setResponsable(null);
+			societeService.saveSociete(s);
+			VerificationResponsable verif = verificationResponsableRepos.findByResponsable(user);
+			if (verif == null)
+				verif =  new VerificationResponsable();
+			verif.setResponsable(user);
+			verif.setSociete(s);
+			verificationResponsableRepos.save(verif);
+			
+		}
+		else {
+			VerificationResponsable verif = verificationResponsableRepos.findByResponsable(user);
+			Societe s = societeService.findSocieteByName(verif.getSociete().getname());
+			if (s.getResponsable() == null)
+				s.setResponsable(user);
+			else 
+				return ResponseEntity
+						.badRequest()
+						.body(new JSONResponse("Cette Soicete à déja un Responsable"));
+		}
+		User usr = userService.saveUser(user);
+		return  ResponseEntity.ok(usr);
 	}
 	
 	/**********************************************Customers*****************************************************/
@@ -145,14 +174,21 @@ public class userRestController {
 		List<Role> roles = new ArrayList<>();
 		Role r = roleRepository.findByRole(user.getRole());
 		roles.add(r);
-		if (user.getRole().equals(ERole.RESPONSABLE_SOCIETE.name()))
+		if (user.getRole().equals(ERole.RESPONSABLE_SOCIETE.name())) {
 			roles.add(roleRepository.findByRole(ERole.PERSONNEL_SOCIETE.name()));
+		}
+			
 		newUser.setRoles(roles);
 		
 		/*String msg = "Your username is : " + user.getUsername() + "\n" + " Your password is: " + user.getPassword();
 		emailSenderService.sendEmail(user.getEmail(),"Solution CRM",msg);*/
-		
-		return ResponseEntity.ok(userService.saveUser(newUser));
+		User usr = userService.saveUser(newUser);
+		if (user.getRole().equals(ERole.RESPONSABLE_SOCIETE.name())) {
+			Societe s = societeService.getSociete(user.getSociete());
+			s.setResponsable(usr);
+			societeService.updateSociete(s);
+		}
+		return ResponseEntity.ok(usr);
 	}
 	
 	@RequestMapping(path="customers/update/{id}",method = RequestMethod.PUT)

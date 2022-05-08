@@ -5,6 +5,8 @@ public class SocieteDTO {
 	private Long id;
 	private String name;
 	private int nbEmpl;
+	private String responsable;
+	
 	public Long getId() {
 		return id;
 	}
@@ -22,6 +24,15 @@ public class SocieteDTO {
 	}
 	public void setNbEmpl(int nbEmpl) {
 		this.nbEmpl = nbEmpl;
+	}
+	
+	
+	
+	public String getResponsable() {
+		return responsable;
+	}
+	public void setResponsable(String responsable) {
+		this.responsable = responsable;
 	}
 	@Override
 	public String toString() {

@@ -30,6 +30,11 @@ public class SocieteRestController {
 		return ResponseEntity.ok(societeService.getAllSocietes());
 	}
 	
+	@RequestMapping(path="all/responsable",method = RequestMethod.GET)
+	public ResponseEntity<?> getAllResponsableNull(){
+		return ResponseEntity.ok(societeService.getAllSocietesByRespon());
+	}
+	
 	@RequestMapping(path="/{id}",method = RequestMethod.GET)
 	public ResponseEntity<?> getSociete(@PathVariable("id") Long id){
 		return ResponseEntity.ok(societeService.getSociete(id));
