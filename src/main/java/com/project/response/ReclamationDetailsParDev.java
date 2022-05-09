@@ -2,20 +2,52 @@ package com.project.response;
 
 public class ReclamationDetailsParDev {
 
-	private String nom;
-	private int nbReclamation;
-	public String getNom() {
-		return nom;
+	private String cloture = "Cloturé";
+	private Long nbReclamationClo;
+	private String encours = "En Cours";
+	private Long nbReclamationEn;
+	
+	
+	public String getCloture() {
+		return cloture;
 	}
-	public void settype(String nom) {
-		this.nom = nom;
+
+
+	public Long getNbReclamationClo() {
+		return nbReclamationClo;
 	}
-	public int getNbReclamation() {
-		return nbReclamation;
+
+
+	public String getEncours() {
+		return encours;
 	}
-	public void setNbReclamation(int nbReclamation) {
-		this.nbReclamation = nbReclamation;
+
+
+	public Long getNbReclamationEn() {
+		return nbReclamationEn;
 	}
+
+
+	public void setCloture(String cloture) {
+		this.cloture = cloture;
+	}
+
+
+	public void setNbReclamationClo(Long nbReclamationClo) {
+		this.nbReclamationClo = nbReclamationClo;
+	}
+
+
+	public void setEncours(String encours) {
+		this.encours = encours;
+	}
+
+
+	public void setNbReclamationEn(Long nbReclamationEn) {
+		this.nbReclamationEn = nbReclamationEn;
+	}
+
+
 	public ReclamationDetailsParDev() {
 		super();
 		// TODO Auto-generated constructor stub

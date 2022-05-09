@@ -1,5 +1,6 @@
 package com.project.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.project.entities.Etat;
@@ -9,6 +10,7 @@ import com.project.request.ReclamationModel;
 import com.project.response.ReclamationDTO;
 import com.project.response.ReclamationDetails;
 import com.project.response.ReclamationDetailsDev;
+import com.project.response.ReclamationDetailsParDev;
 import com.project.response.ReclamationDetailsType;
 import com.project.response.TestProjet;
 
@@ -39,12 +41,18 @@ public interface ReclamationService {
 	void deleteReclamation(Reclamation type);
 	void deleteReclamation(Long id);
 	ReclamationDetails getDétailsByUser(String username);
+	ReclamationDetails getDétailsByUserAndDates(String username,LocalDateTime date1,LocalDateTime date2);
 	ReclamationDetails getDétailsByEtat();
 	List<TestProjet> totalByProjet();
+	List<TestProjet> totalByProjetAndates(LocalDateTime date1,LocalDateTime date2);
 	List<TestProjet> totalByProjetAndEtat(String etat);
+	List<TestProjet> totalByProjetAndEtatAndDates(String etat,LocalDateTime date1,LocalDateTime date2);
 	List<ReclamationDetailsType> totalByType();
+	List<ReclamationDetailsType> totalByTypeAndDates(LocalDateTime date1,LocalDateTime date2);
 	List<ReclamationDetailsType> totalByTypeAndEtat(String etat);
+	List<ReclamationDetailsType> totalByTypeAndEtatAndDates(String etat,LocalDateTime date1,LocalDateTime date2);
 	List<ReclamationDetailsDev> totalByDeveloppeurs();
-	List<ReclamationDetailsDev>
-	totalByDeveloppeursAndEtat(String etat);
+	List<ReclamationDetailsDev> totalByDeveloppeursAndDates(LocalDateTime date1,LocalDateTime date2);
+	List<ReclamationDetailsDev> totalByDeveloppeursAndEtat(String etat);
+	List<ReclamationDetailsDev> totalByDeveloppeursAndEtatAndDates(String etat,LocalDateTime date1,LocalDateTime date2);
 }

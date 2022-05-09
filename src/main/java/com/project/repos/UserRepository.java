@@ -21,8 +21,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	//List<User> findByRoles(List<Role> roles);
 	
 	List<User> findUsersBySpecialitiesNom(String nom);
-	List<User> findBySociete(Societe societe);
+	//List<User> findBySociete(Societe societe);
 
+	@Query("SELECT u from User u join Societe s on (u.societe = s) where s=?1 and u.enabled = true")
+	List<User> findBySociete(Societe societe);
+	
 	@Query(
 			"SELECT u from User u join Societe s on (u.societe = s) "
 			+ "where ((s.name = :name) and"

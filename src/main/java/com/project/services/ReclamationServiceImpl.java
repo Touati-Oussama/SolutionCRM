@@ -1,5 +1,6 @@
 package com.project.services;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import com.project.response.ProjetDTO;
 import com.project.response.ReclamationDTO;
 import com.project.response.ReclamationDetails;
 import com.project.response.ReclamationDetailsDev;
+import com.project.response.ReclamationDetailsParDev;
 import com.project.response.ReclamationDetailsType;
 import com.project.response.StaffDTO;
 import com.project.response.TestProjet;
@@ -522,6 +524,17 @@ public class ReclamationServiceImpl implements ReclamationService {
 	}
 
 	@Override
+	public ReclamationDetails getDétailsByUserAndDates(String username, LocalDateTime date1, LocalDateTime date2) {
+		ReclamationDetails details = new ReclamationDetails();
+		User user = userService.findUserByUsername(username);
+		details.setTotal(reclamationRepository.totalByUserAndDates(user,date1,date2));
+		details.setEncours(reclamationRepository.totalByUserByEtatAndDates(user, Etat.EN_COURS,date1,date2));
+		details.setCloture(reclamationRepository.totalByUserByEtatAndDates(user, Etat.ClOTURE,date1,date2));
+		return details;
+	}
+
+	
+	@Override
 	public ReclamationDetails getDétailsByEtat() {
 		// TODO Auto-generated method stub
 		ReclamationDetails details = new ReclamationDetails();
@@ -561,44 +574,44 @@ public class ReclamationServiceImpl implements ReclamationService {
 			}
 			
 		});
+		x = 0;
 		return res;
 	}
 
 	@Override
-	public List<ReclamationDetailsType> totalByType() {
+	public List<TestProjet> totalByProjetAndates(LocalDateTime date1, LocalDateTime date2) {
 
-		List<Object[]> tmp = reclamationRepository.totalByType();
-		List<TypeReclamation>types = typeService.getAll();
-		List<ReclamationDetailsType> res = new ArrayList<>();
-		types.forEach(p->{
-			typeTest = 0;
+		List<Object[]> tmp = reclamationRepository.totalByProjetAndDates(date1,date2);
+		List<ProjetDTO>projets = projetService.findAll();
+		List<TestProjet> res = new ArrayList<>();
+		projets.forEach(p->{
+			x = 0;
 			tmp.forEach(t->{
-				if ((t[0].equals(p.getType())))
+				if ((t[0].equals(p.getDesignation())))
 				{
-					typeTest = Integer.parseInt(t[1].toString());
+					x = Integer.parseInt(t[1].toString());
 				}
 			});
-			if (typeTest > 0)
+			if (x > 0)
 			{
-				ReclamationDetailsType t = new ReclamationDetailsType();
-				t.settype(p.getType());
-				t.setNbReclamation(typeTest);
+				TestProjet t = new TestProjet();
+				t.setProjet(p.getDesignation());
+				t.setNbReclamation(x);
 				res.add(t);
 			}
 			else
 			{
-				ReclamationDetailsType t = new ReclamationDetailsType();
-				t.settype(p.getType());
+				TestProjet t = new TestProjet();
+				t.setProjet(p.getDesignation());
 				t.setNbReclamation(0);
 				res.add(t);
 			}
 			
 		});
+		x = 0;
 		return res;
 	}
-	
-	
-
+		
 	@Override
 	public List<TestProjet> totalByProjetAndEtat(String etat) {
 		// TODO Auto-generated method stub
@@ -639,6 +652,155 @@ public class ReclamationServiceImpl implements ReclamationService {
 		});
 		return res;
 	}
+	
+	@Override
+	public List<TestProjet> totalByProjetAndEtatAndDates(String etat, LocalDateTime date1, LocalDateTime date2) {
+		Etat e = null;
+		if (etat.equals(Etat.EN_COURS.name())) 
+			e = Etat.EN_COURS;
+		else if (etat.equals(Etat.ClOTURE.name())) 
+			e = Etat.ClOTURE;
+		else if (etat.equals(Etat.EN_ATTENTE.name())) 
+			 e = Etat.EN_ATTENTE;
+		
+		List<Object[]> tmp = reclamationRepository.totalByProjetAndEtatAndDates(e,date1,date2);
+		List<ProjetDTO>projets = projetService.findAll();
+		List<TestProjet> res = new ArrayList<>();
+		projets.forEach(p->{
+			x = 0;
+			tmp.forEach(t->{
+				if ((t[0].equals(p.getDesignation())))
+				{
+					x = Integer.parseInt(t[1].toString());
+				}
+			});
+			if (x > 0)
+			{
+				TestProjet t = new TestProjet();
+				t.setProjet(p.getDesignation());
+				t.setNbReclamation(x);
+				res.add(t);
+			}
+			else
+			{
+				TestProjet t = new TestProjet();
+				t.setProjet(p.getDesignation());
+				t.setNbReclamation(0);
+				res.add(t);
+			}
+			
+		});
+		return res;
+	}
+	
+	@Override
+	public List<ReclamationDetailsType> totalByType() {
+
+		List<Object[]> tmp = reclamationRepository.totalByType();
+		List<TypeReclamation>types = typeService.getAll();
+		List<ReclamationDetailsType> res = new ArrayList<>();
+		types.forEach(p->{
+			typeTest = 0;
+			tmp.forEach(t->{
+				if ((t[0].equals(p.getType())))
+				{
+					typeTest = Integer.parseInt(t[1].toString());
+				}
+			});
+			if (typeTest > 0)
+			{
+				ReclamationDetailsType t = new ReclamationDetailsType();
+				t.settype(p.getType());
+				t.setNbReclamation(typeTest);
+				res.add(t);
+			}
+			else
+			{
+				ReclamationDetailsType t = new ReclamationDetailsType();
+				t.settype(p.getType());
+				t.setNbReclamation(0);
+				res.add(t);
+			}
+			
+		});
+		return res;
+	}
+	
+
+	@Override
+	public List<ReclamationDetailsType> totalByTypeAndDates(LocalDateTime date1, LocalDateTime date2) {
+		List<Object[]> tmp = reclamationRepository.totalByTypeAndDates(date1,date2);
+		List<TypeReclamation>types = typeService.getAll();
+		List<ReclamationDetailsType> res = new ArrayList<>();
+		types.forEach(p->{
+			typeTest = 0;
+			tmp.forEach(t->{
+				if ((t[0].equals(p.getType())))
+				{
+					typeTest = Integer.parseInt(t[1].toString());
+				}
+			});
+			if (typeTest > 0)
+			{
+				ReclamationDetailsType t = new ReclamationDetailsType();
+				t.settype(p.getType());
+				t.setNbReclamation(typeTest);
+				res.add(t);
+			}
+			else
+			{
+				ReclamationDetailsType t = new ReclamationDetailsType();
+				t.settype(p.getType());
+				t.setNbReclamation(0);
+				res.add(t);
+			}
+			
+		});
+		return res;
+	}
+
+	@Override
+	public List<ReclamationDetailsType> totalByTypeAndEtatAndDates(String etat, LocalDateTime date1,
+			LocalDateTime date2) {
+		Etat e = null;
+		if (etat.equals(Etat.EN_COURS.name())) 
+			e = Etat.EN_COURS;
+		else if (etat.equals(Etat.ClOTURE.name())) 
+			e = Etat.ClOTURE;
+		else if (etat.equals(Etat.EN_ATTENTE.name())) 
+			 e = Etat.EN_ATTENTE;
+		List<Object[]> tmp = reclamationRepository.totalByTypeAndEtatAndDates(e,date1,date2);
+		List<TypeReclamation>types = typeService.getAll();
+		List<ReclamationDetailsType> res = new ArrayList<>();
+		types.forEach(p->{
+			typeTest = 0;
+			tmp.forEach(t->{
+				if ((t[0].equals(p.getType())))
+				{
+					System.out.println(Integer.parseInt(t[1].toString()));
+					typeTest = Integer.parseInt(t[1].toString());
+				}
+			});
+			if (typeTest > 0)
+			{
+				ReclamationDetailsType t = new ReclamationDetailsType();
+				t.settype(p.getType());
+				t.setNbReclamation(typeTest);
+				res.add(t);
+			}
+			else
+			{
+				ReclamationDetailsType t = new ReclamationDetailsType();
+				t.settype(p.getType());
+				t.setNbReclamation(0);
+				res.add(t);
+			}
+			
+		});
+		return res;
+	}
+
+	
 
 	@Override
 	public List<ReclamationDetailsType> totalByTypeAndEtat(String etat) {
@@ -716,6 +878,37 @@ public class ReclamationServiceImpl implements ReclamationService {
 	}
 
 	@Override
+	public List<ReclamationDetailsDev> totalByDeveloppeursAndDates(LocalDateTime date1, LocalDateTime date2) {
+		 List <Object[]> tmp =  reclamationRepository.totalByDeveloppeurAndDates(date1,date2);
+		 List<StaffDTO>users = userService.getAllEmployee();
+			List<ReclamationDetailsDev> res = new ArrayList<>();
+			users.forEach(u->{
+				devTest = 0;
+				tmp.forEach(t->{
+					if ((t[0].equals(u.getNom())))
+					{
+						devTest = Integer.parseInt(t[1].toString());
+					}
+				});
+				if (devTest > 0)
+				{
+					ReclamationDetailsDev t = new ReclamationDetailsDev();
+					t.setUsername(u.getNom()+" "+u.getPrenom());
+					t.setNbReclamation(devTest);
+					res.add(t);
+				}
+				else
+				{
+					ReclamationDetailsDev t = new ReclamationDetailsDev();
+					t.setUsername(u.getNom()+" "+u.getPrenom());
+					t.setNbReclamation(0);
+					res.add(t);
+				}
+				
+			});
+			return res;
+	}
+	@Override
 	
 	
 	public List<ReclamationDetailsDev> totalByDeveloppeursAndEtat(String etat) {
@@ -755,6 +948,60 @@ public class ReclamationServiceImpl implements ReclamationService {
 			});
 			return res;
 	}
+
+	
+	
+	@Override
+	public List<ReclamationDetailsDev> totalByDeveloppeursAndEtatAndDates(String etat, LocalDateTime date1,
+			LocalDateTime date2) {
+		Etat e = null;
+		if (etat.equals(Etat.EN_COURS.name())) 
+			e = Etat.EN_COURS;
+		else if (etat.equals(Etat.ClOTURE.name())) 
+			e = Etat.ClOTURE;
+		else if (etat.equals(Etat.EN_ATTENTE.name())) 
+			 e = Etat.EN_ATTENTE;
+		List <Object[]> tmp =  reclamationRepository.totalByDeveloppeurAndEtatAndDates(e,date1,date2);
+		 List<StaffDTO>users = userService.getAllEmployee();
+			List<ReclamationDetailsDev> res = new ArrayList<>();
+			users.forEach(u->{
+				devTest = 0;
+				tmp.forEach(t->{
+					if ((t[0].equals(u.getNom())))
+					{
+						devTest = Integer.parseInt(t[1].toString());
+					}
+				});
+				if (devTest > 0)
+				{
+					ReclamationDetailsDev t = new ReclamationDetailsDev();
+					t.setUsername(u.getNom()+" "+u.getPrenom());
+					t.setNbReclamation(devTest);
+					res.add(t);
+				}
+				else
+				{
+					ReclamationDetailsDev t = new ReclamationDetailsDev();
+					t.setUsername(u.getNom()+" "+u.getPrenom());
+					t.setNbReclamation(0);
+					res.add(t);
+				}
+				
+			});
+			return res;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

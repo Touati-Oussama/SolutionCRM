@@ -1,6 +1,7 @@
 
 package com.project.repos;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -56,31 +57,69 @@ public interface ReclamationRepository extends JpaRepository<Reclamation, Long>{
 	
 	List<Reclamation> findByProjetSocieteName(String name);
 	
-	@Query("SELECT COUNT(r) FROM Reclamation r WHERE r.developpeur=?1")
-    long totalByUser(User developpeur);
+
 	
-	@Query("SELECT COUNT(r) FROM Reclamation r WHERE r.developpeur=?1 and r.etat = ?2")
-    long totalByUserByEtat(User developpeur,Etat etat);
+
+    
 	@Query("SELECT COUNT(r) FROM Reclamation r WHERE  r.etat = ?1")
     long totalByEtat(Etat etat);
 	
-	
+	///// Détails Par Projet
 	@Query("SELECT r.projet.designation, COUNT(r.projet.designation) FROM Reclamation r GROUP BY r.projet.designation ORDER BY r.projet.designation")
 	List<Object[]> totalByProjet();
 	
+	@Query("SELECT r.projet.designation, COUNT(r.projet.designation) FROM Reclamation r  where (r.dateCreation >= ?1 and r.dateCreation <= ?2) GROUP BY r.projet.designation ORDER BY r.projet.designation")
+	List<Object[]> totalByProjetAndDates(LocalDateTime date1,LocalDateTime date2);
+	
+
 	@Query("SELECT r.projet.designation, COUNT(r.projet.designation) FROM Reclamation r WHERE r.etat =?1  GROUP BY r.projet.designation  ORDER BY r.projet.designation ")
 	List<Object[]> totalByProjetAndEtat(Etat etat);
 	
+	@Query("SELECT r.projet.designation, COUNT(r.projet.designation) FROM Reclamation r WHERE (r.etat =?1 and r.dateCreation >= ?2 and r.dateCreation <= ?3) GROUP BY r.projet.designation  ORDER BY r.projet.designation ")
+	List<Object[]> totalByProjetAndEtatAndDates(Etat etat,LocalDateTime date1,LocalDateTime date2);
+	
+	////Détails Par Type
 	@Query("SELECT r.type.type, COUNT(r.type.type) FROM Reclamation r GROUP BY r.type.type")
 	List<Object[]> totalByType();
+	
+	@Query("SELECT r.type.type, COUNT(r.type.type) FROM Reclamation r where (r.dateCreation >= ?1 and r.dateCreation <= ?2)  GROUP BY r.type.type")
+	List<Object[]> totalByTypeAndDates(LocalDateTime date1,LocalDateTime date2);
 	
 	@Query("SELECT r.type.type, COUNT(r.type.type) FROM Reclamation r WHERE r.etat =?1 GROUP BY r.type.type ORDER BY r.type.type")
 	List<Object[]> totalByTypeAndEtat(Etat etat);
 	
-	@Query("SELECT CONCAT(r.developpeur.nom), COUNT(r.developpeur.nom) FROM Reclamation r GROUP BY r.developpeur.nom")
+	@Query("SELECT r.type.type, COUNT(r.type.type) FROM Reclamation r WHERE (r.etat =?1 and r.dateCreation >= ?2 and r.dateCreation <= ?3) GROUP BY r.type.type ORDER BY r.type.type")
+	List<Object[]> totalByTypeAndEtatAndDates(Etat etat,LocalDateTime date1,LocalDateTime date2);
+	
+	
+	
+	
+	/// Détails Par Developpeur
+	
+	@Query("SELECT COUNT(r) FROM Reclamation r WHERE (r.developpeur=?1 and r.dateCreation >= ?2 and r.dateCreation <= ?3)")
+    long totalByUserAndDates(User developpeur,LocalDateTime date1,LocalDateTime date2);
+	
+	@Query("SELECT COUNT(r) FROM Reclamation r WHERE r.developpeur=?1 and r.etat = ?2")
+    long totalByUserByEtat(User developpeur,Etat etat);
+	
+	@Query("SELECT COUNT(r) FROM Reclamation r WHERE (r.developpeur=?1 and r.etat = ?2 and r.dateCreation >= ?3 and r.dateCreation <= ?4) ")
+    long totalByUserByEtatAndDates(User developpeur,Etat etat,LocalDateTime date1,LocalDateTime date2);
+	
+	@Query("SELECT COUNT(r) FROM Reclamation r WHERE r.developpeur=?1")
+    long totalByUser(User developpeur);
+	
+	
+	@Query("SELECT CONCAT(r.developpeur.nom), COUNT(r.developpeur.nom) FROM Reclamation r  GROUP BY r.developpeur.nom")
 	List<Object[]> totalByDeveloppeur();
+	
+	
+	@Query("SELECT CONCAT(r.developpeur.nom), COUNT(r.developpeur.nom) FROM Reclamation r  where (r.dateCreation >= ?1 and r.dateCreation <= ?2) GROUP BY r.developpeur.nom")
+	List<Object[]> totalByDeveloppeurAndDates(LocalDateTime date1,LocalDateTime date2);
 	
 	@Query("SELECT CONCAT(r.developpeur.nom), COUNT(r.developpeur.nom) FROM Reclamation r WHERE r.etat =?1 GROUP BY r.developpeur.nom ORDER BY r.developpeur.nom")
 	List<Object[]> totalByDeveloppeurAndEtat(Etat etat);
+	
+	@Query("SELECT CONCAT(r.developpeur.nom), COUNT(r.developpeur.nom) FROM Reclamation r WHERE (r.etat =?1 and r.dateCreation >= ?2 and r.dateCreation <= ?3) GROUP BY r.developpeur.nom ORDER BY r.developpeur.nom")
+	List<Object[]> totalByDeveloppeurAndEtatAndDates(Etat etat,LocalDateTime date1,LocalDateTime date2);
 	
 }

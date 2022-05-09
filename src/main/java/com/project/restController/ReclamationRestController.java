@@ -1,5 +1,8 @@
 package com.project.restController;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -86,31 +89,88 @@ public class ReclamationRestController {
 		return ResponseEntity.ok(reclamationService.getDétailsByUser(username));
 	}
 	
+	@RequestMapping(path = "/details/user/dates", method = RequestMethod.GET)
+	public ResponseEntity<?> details(@RequestParam("username") String username,@RequestParam("date1") String date1, @RequestParam("date2") String date2){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); 
+		LocalDateTime dateTime1 = LocalDateTime.parse(date1, formatter);
+		LocalDateTime dateTime2 = LocalDateTime.parse(date2, formatter);
+		return ResponseEntity.ok(reclamationService.getDétailsByUserAndDates(username,dateTime1,dateTime2));
+	}
+
+	
 	@RequestMapping(path = "/details/projet", method = RequestMethod.GET)
 	public ResponseEntity<?> detailsByPorjet(){
 		return ResponseEntity.ok(reclamationService.totalByProjet());
 	}
+	
+	@RequestMapping(path = "/details/projet/dates", method = RequestMethod.GET)
+	public ResponseEntity<?> detailsByPorjet(@RequestParam("date1") String date1, @RequestParam("date2") String date2){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); 
+		LocalDateTime dateTime1 = LocalDateTime.parse(date1, formatter);
+		LocalDateTime dateTime2 = LocalDateTime.parse(date2, formatter);
+		return ResponseEntity.ok(reclamationService.totalByProjetAndates(dateTime1,dateTime2));
+	}
 	@RequestMapping(path = "/details/projet/status", method = RequestMethod.GET)
 	public ResponseEntity<?> detailsByPorjet(@RequestParam("status") String status){
 		return ResponseEntity.ok(reclamationService.totalByProjetAndEtat(status));
+	}
+	
+	@RequestMapping(path = "/details/projet/status/dates", method = RequestMethod.GET)
+	public ResponseEntity<?> detailsByPorjet(@RequestParam("status") String status,@RequestParam("date1") String date1, @RequestParam("date2") String date2){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); 
+		LocalDateTime dateTime1 = LocalDateTime.parse(date1, formatter);
+		LocalDateTime dateTime2 = LocalDateTime.parse(date2, formatter);
+		return ResponseEntity.ok(reclamationService.totalByProjetAndEtatAndDates(status,dateTime1,dateTime2));
 	}
 	@RequestMapping(path = "/details/type", method = RequestMethod.GET)
 	public ResponseEntity<?> detailsByType(){
 		return ResponseEntity.ok(reclamationService.totalByType());
 	}
 	
+	@RequestMapping(path = "/details/type/dates", method = RequestMethod.GET)
+	public ResponseEntity<?> detailsByType(@RequestParam("date1") String date1, @RequestParam("date2") String date2){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); 
+		LocalDateTime dateTime1 = LocalDateTime.parse(date1, formatter);
+		LocalDateTime dateTime2 = LocalDateTime.parse(date2, formatter);
+		return ResponseEntity.ok(reclamationService.totalByTypeAndDates(dateTime1,dateTime2));
+	}
+	
 	@RequestMapping(path = "/details/type/status", method = RequestMethod.GET)
 	public ResponseEntity<?> detailsByType(@RequestParam("status") String status){
 		return ResponseEntity.ok(reclamationService.totalByTypeAndEtat(status));
+	}
+	
+	@RequestMapping(path = "/details/type/status/dates", method = RequestMethod.GET)
+	public ResponseEntity<?> detailsByType(@RequestParam("status") String status,@RequestParam("date1") String date1, @RequestParam("date2") String date2){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); 
+		LocalDateTime dateTime1 = LocalDateTime.parse(date1, formatter);
+		LocalDateTime dateTime2 = LocalDateTime.parse(date2, formatter);
+		return ResponseEntity.ok(reclamationService.totalByTypeAndEtatAndDates(status,dateTime1,dateTime2));
 	}
 	@RequestMapping(path = "/details/personnel", method = RequestMethod.GET)
 	public ResponseEntity<?> detailsByDeveloppeurs(){
 		return ResponseEntity.ok(reclamationService.totalByDeveloppeurs());
 	}
 	
+	@RequestMapping(path = "/details/personnel/dates", method = RequestMethod.GET)
+	public ResponseEntity<?> detailsByDeveloppeurs(@RequestParam("date1") String date1, @RequestParam("date2") String date2){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); 
+		LocalDateTime dateTime1 = LocalDateTime.parse(date1, formatter);
+		LocalDateTime dateTime2 = LocalDateTime.parse(date2, formatter);
+		return ResponseEntity.ok(reclamationService.totalByDeveloppeursAndDates(dateTime1,dateTime2));
+	}
+	
 	@RequestMapping(path = "/details/personnel/status", method = RequestMethod.GET)
 	public ResponseEntity<?> detailsByDeveloppeurs(@RequestParam("status") String status){
 		return ResponseEntity.ok(reclamationService.totalByDeveloppeursAndEtat(status));
+	}
+	
+	@RequestMapping(path = "/details/personnel/status/dates", method = RequestMethod.GET)
+	public ResponseEntity<?> detailsByDeveloppeurs(@RequestParam("status") String status,@RequestParam("date1") String date1, @RequestParam("date2") String date2){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); 
+		LocalDateTime dateTime1 = LocalDateTime.parse(date1, formatter);
+		LocalDateTime dateTime2 = LocalDateTime.parse(date2, formatter);
+		return ResponseEntity.ok(reclamationService.totalByDeveloppeursAndEtatAndDates(status,dateTime1,dateTime2));
 	}
 	
 	
