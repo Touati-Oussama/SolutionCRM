@@ -167,4 +167,10 @@ public class ProjetServiceImpl implements ProjetService{
 		return projetRepository.existsByDesignation(designation);
 	}
 
+	@Override
+	public Projet findByDesignation(String designation) {
+		// TODO Auto-generated method stub
+		return projetRepository.findByDesignation(designation);
+	}
+
 }

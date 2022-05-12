@@ -84,6 +84,19 @@ public class ReclamationRestController {
 		return ResponseEntity.ok(reclamationService.getDétailsByEtat());
 	}
 	
+	@RequestMapping(path = "/details/status/societe", method = RequestMethod.GET)
+	public ResponseEntity<?> detailsByStatusAndSociety(@RequestParam("societe") String societe){
+		return ResponseEntity.ok(reclamationService.getDétailsByEtatAndSoicety(societe));
+	}
+	
+	@RequestMapping(path = "/details/status/societe/dates", method = RequestMethod.GET)
+	public ResponseEntity<?> detailsByStatusAndSociety(@RequestParam("societe") String societe,@RequestParam("date1") String date1, @RequestParam("date2") String date2){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); 
+		LocalDateTime dateTime1 = LocalDateTime.parse(date1, formatter);
+		LocalDateTime dateTime2 = LocalDateTime.parse(date2, formatter);
+		return ResponseEntity.ok(reclamationService.getDétailsByEtatAndSoicetyAndDates(societe,dateTime1,dateTime2));
+	}
+	
 	@RequestMapping(path = "/details/user", method = RequestMethod.GET)
 	public ResponseEntity<?> details(@RequestParam("username") String username){
 		return ResponseEntity.ok(reclamationService.getDétailsByUser(username));

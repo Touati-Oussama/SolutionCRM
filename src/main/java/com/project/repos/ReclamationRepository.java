@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.project.entities.Etat;
 import com.project.entities.Projet;
 import com.project.entities.Reclamation;
+import com.project.entities.Societe;
 import com.project.entities.TypeReclamation;
 import com.project.entities.User;
 
@@ -64,6 +65,18 @@ public interface ReclamationRepository extends JpaRepository<Reclamation, Long>{
 	@Query("SELECT COUNT(r) FROM Reclamation r WHERE  r.etat = ?1")
     long totalByEtat(Etat etat);
 	
+	@Query("SELECT COUNT(r) FROM Reclamation r join Projet p on (r.projet = p) join Societe s on (p.societe = s) WHERE  s = ?1")
+    long totalBySociete(Societe s);
+	
+	@Query("SELECT COUNT(r) FROM Reclamation r join Projet p on (r.projet = p) join Societe s on (p.societe = s) WHERE  (s = ?1 and r.dateCreation >= ?2 and r.dateCreation <= ?3)")
+    long totalBySocieteAndDates(Societe s,LocalDateTime date1,LocalDateTime date2);
+	
+	@Query("SELECT COUNT(r) FROM Reclamation r join Projet p on (r.projet = p) join Societe s on (p.societe = s) WHERE  r.etat = ?1 and s = ?2")
+    long totalByEtatAndSociete(Etat etat,Societe s);
+	
+	@Query("SELECT COUNT(r) FROM Reclamation r join Projet p on (r.projet = p) join Societe s on (p.societe = s) WHERE  (r.etat = ?1 and s = ?2 and r.dateCreation >= ?3 and r.dateCreation <= ?4) ")
+    long totalByEtatAndSocieteAndDates(Etat etat,Societe s,LocalDateTime date1,LocalDateTime date2);
+	
 	///// Détails Par Projet
 	@Query("SELECT r.projet.designation, COUNT(r.projet.designation) FROM Reclamation r GROUP BY r.projet.designation ORDER BY r.projet.designation")
 	List<Object[]> totalByProjet();
@@ -107,6 +120,8 @@ public interface ReclamationRepository extends JpaRepository<Reclamation, Long>{
 	
 	@Query("SELECT COUNT(r) FROM Reclamation r WHERE r.developpeur=?1")
     long totalByUser(User developpeur);
+	
+
 	
 	
 	@Query("SELECT CONCAT(r.developpeur.nom), COUNT(r.developpeur.nom) FROM Reclamation r  GROUP BY r.developpeur.nom")

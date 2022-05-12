@@ -9,10 +9,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.entities.Projet;
+import com.project.entities.TrelloBoard;
+import com.project.repos.TrelloBoardRepository;
 import com.project.request.ProjetModel;
+import com.project.request.TrelloBoardReq;
 import com.project.response.JSONResponse;
 import com.project.services.ProjetService;
 import com.project.services.ReclamationService;
@@ -37,6 +41,8 @@ public class ProjetRestController {
 	@Autowired
 	SocieteService societeService;
 	
+	@Autowired
+	TrelloBoardRepository trelloBoardRepository;
 	
 	@Autowired
 	ReclamationService reclamationService;
@@ -99,6 +105,22 @@ public class ProjetRestController {
 		return ResponseEntity.ok(projetService.add(p));
 	}
 	
+	@RequestMapping(path="/trello/add",method = RequestMethod.POST)
+	public ResponseEntity<?> createBoard(@RequestBody TrelloBoardReq board ){
+	  TrelloBoard b = new TrelloBoard();
+	  b.setId(board.getIdBoard());
+	  b.setIdListToDo(board.getIdListToDo());
+	  b.setIdListDoing(board.getIdListDoing());
+	  b.setIdListDone(board.getIdListDone());
+	  b.setProjet(projetService.getProjet(board.getProjet()));
+	  return ResponseEntity.ok(trelloBoardRepository.save(b));
+	}
+	
+	@RequestMapping(path="/trello/board",method = RequestMethod.GET)
+	public TrelloBoard findBoard(@RequestParam("projet") String designation){
+		Projet p = projetService.findByDesignation(designation);
+		return trelloBoardRepository.findByProjet(p);
+	}
 	
 	@RequestMapping(path="delete/{id}",method = RequestMethod.DELETE)
 	public ResponseEntity<?>delete(@PathVariable("id")Long id){
@@ -109,7 +131,13 @@ public class ProjetRestController {
 					.badRequest()
 					.body(new JSONResponse("Cann not delete this project.It contain complaints !"));
 		}
-		projetService.deleteProjet(id);
+		
+		TrelloBoard t = trelloBoardRepository.findByProjet(projetService.getProjet(id));
+		if (t != null)
+		trelloBoardRepository.delete(t);
+		else 
+			projetService.deleteProjet(id);
+		
 		JSONResponse response = new JSONResponse("Projet Supprimé !");
 		return ResponseEntity.ok(response);
 	}

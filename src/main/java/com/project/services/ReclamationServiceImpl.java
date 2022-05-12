@@ -12,6 +12,7 @@ import com.project.entities.ERole;
 import com.project.entities.Etat;
 import com.project.entities.Projet;
 import com.project.entities.Reclamation;
+import com.project.entities.Societe;
 import com.project.entities.TypeReclamation;
 import com.project.entities.User;
 import com.project.repos.ReclamationRepository;
@@ -34,6 +35,9 @@ public class ReclamationServiceImpl implements ReclamationService {
 	
 	@Autowired
 	ProjetService projetService;
+	
+	@Autowired
+	SocieteService societeService;
 	
 	@Autowired
 	ComplaintFileStorageService complaintFileStorageService;
@@ -545,6 +549,29 @@ public class ReclamationServiceImpl implements ReclamationService {
 		return details;
 	}
 	
+
+	@Override
+	public ReclamationDetails getDétailsByEtatAndSoicety(String  societe) {
+		Societe s = societeService.findSocieteByName(societe);
+		ReclamationDetails details = new ReclamationDetails();
+		details.setTotal(reclamationRepository.totalBySociete(s));
+		details.setNouv(reclamationRepository.totalByEtatAndSociete(Etat.EN_ATTENTE,s));
+		details.setEncours(reclamationRepository.totalByEtatAndSociete(Etat.EN_COURS,s));
+		details.setCloture(reclamationRepository.totalByEtatAndSociete(Etat.ClOTURE,s));
+		return details;
+	}
+
+	@Override
+	public ReclamationDetails getDétailsByEtatAndSoicetyAndDates(String societe, LocalDateTime date1, LocalDateTime date2) {
+		Societe s = societeService.findSocieteByName(societe);
+		ReclamationDetails details = new ReclamationDetails();
+		details.setTotal(reclamationRepository.totalBySocieteAndDates(s,date1,date2));
+		details.setNouv(reclamationRepository.totalByEtatAndSocieteAndDates(Etat.EN_ATTENTE,s,date1,date1));
+		details.setEncours(reclamationRepository.totalByEtatAndSocieteAndDates(Etat.EN_COURS,s,date1,date2));
+		details.setCloture(reclamationRepository.totalByEtatAndSocieteAndDates(Etat.ClOTURE,s,date1,date2));
+		return details;
+	}
+	
 	@Override
 	public List<TestProjet> totalByProjet() {
 		List<Object[]> tmp = reclamationRepository.totalByProjet();
@@ -990,6 +1017,8 @@ public class ReclamationServiceImpl implements ReclamationService {
 			});
 			return res;
 	}
+
+
 
 
 

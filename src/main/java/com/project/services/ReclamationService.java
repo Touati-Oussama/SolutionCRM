@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.project.entities.Etat;
 import com.project.entities.Reclamation;
+import com.project.entities.Societe;
 import com.project.entities.TypeReclamation;
 import com.project.request.ReclamationModel;
 import com.project.response.ReclamationDTO;
@@ -43,6 +44,8 @@ public interface ReclamationService {
 	ReclamationDetails getDétailsByUser(String username);
 	ReclamationDetails getDétailsByUserAndDates(String username,LocalDateTime date1,LocalDateTime date2);
 	ReclamationDetails getDétailsByEtat();
+	ReclamationDetails getDétailsByEtatAndSoicety(String s);
+	ReclamationDetails getDétailsByEtatAndSoicetyAndDates(String s,LocalDateTime date1,LocalDateTime date2);
 	List<TestProjet> totalByProjet();
 	List<TestProjet> totalByProjetAndates(LocalDateTime date1,LocalDateTime date2);
 	List<TestProjet> totalByProjetAndEtat(String etat);

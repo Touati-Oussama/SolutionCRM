@@ -22,4 +22,5 @@ public interface ProjetService {
 	Boolean existsBySpecialiteId(Long id);
 	Boolean existsBySocieteId(Long id);
 	Boolean existsByDesignation(String designation);
+	Projet findByDesignation(String designation);
 }

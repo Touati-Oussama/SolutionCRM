@@ -17,4 +17,5 @@ public interface ProjetRepository extends JpaRepository<Projet, Long> {
 	Boolean existsBySpecialite(Sepicialite specialite);
 	Boolean existsBySociete(Societe societe);
 	Boolean existsByDesignation(String designation);
+	Projet findByDesignation(String designation);
 }
