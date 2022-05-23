@@ -34,6 +34,7 @@ public interface UserService {
 	List<User> findBySocieteNameAndFilter(String name,String keyword);
 	List<User> findByCustomersByFilter(String keyword);
 	List<StaffDTO> getAllEmployee();
+	List<User> getAllStaffs();
 
 	
 }

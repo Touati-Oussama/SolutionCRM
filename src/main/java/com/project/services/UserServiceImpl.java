@@ -206,5 +206,19 @@ public class UserServiceImpl implements UserService{
 		
 		return staffs;
 	}
+	@Override
+	public List<User> getAllStaffs() {
+		
+		List<User> oldUsers = this.getAllUsers();
+		List<User> users = new ArrayList<User>();
+		oldUsers.forEach(user->{
+			user.getRoles().forEach(role->{
+				if (role.getRole().equals(ERole.EMPLOYEE.name()))
+					users.add(user);
+					
+			});
+		});
+		return users;
+	}
 
 }
