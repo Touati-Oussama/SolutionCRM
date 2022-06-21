@@ -91,6 +91,14 @@ public interface ReclamationRepository extends JpaRepository<Reclamation, Long>{
 	@Query("SELECT r.projet.designation, COUNT(r.projet.designation) FROM Reclamation r WHERE (r.etat =?1 and r.dateCreation >= ?2 and r.dateCreation <= ?3) GROUP BY r.projet.designation  ORDER BY r.projet.designation ")
 	List<Object[]> totalByProjetAndEtatAndDates(Etat etat,LocalDateTime date1,LocalDateTime date2);
 	
+	
+	//Détails Par client
+	@Query("SELECT COUNT(r) FROM Reclamation r where r.client = ?1")
+	long totalByClient(User client);
+	
+	@Query("SELECT COUNT(r) FROM Reclamation r WHERE r.client =?1 and r.etat = ?2")
+    long totalByClientByEtat(User client,Etat etat);
+	
 	////Détails Par Type
 	@Query("SELECT r.type.type, COUNT(r.type.type) FROM Reclamation r GROUP BY r.type.type")
 	List<Object[]> totalByType();

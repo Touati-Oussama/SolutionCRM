@@ -25,6 +25,19 @@ public class MyUserDetailsService implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 	User user = userService.findUserByUsername(username);
+	if (user==null || !user.getEnabled())
+	 throw new UsernameNotFoundException("Utilisateur introuvable !");
+	List<GrantedAuthority> auths = new ArrayList<>();
+	user.getRoles().forEach(role -> {
+		GrantedAuthority auhority = new SimpleGrantedAuthority(role.getRole());
+		auths.add(auhority);
+	});
+	return new org.springframework.security.core.
+	userdetails.User(user.getUsername(),user.getPassword(),auths);
+	 }
+	
+	public UserDetails loadUserByUsername(String username,String test) throws UsernameNotFoundException {
+	User user = userService.findUserByUsername(username);
 	if (user==null)
 	 throw new UsernameNotFoundException("Utilisateur introuvable !");
 	List<GrantedAuthority> auths = new ArrayList<>();

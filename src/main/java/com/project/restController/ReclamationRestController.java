@@ -17,6 +17,7 @@ import com.project.entities.Etat;
 import com.project.entities.Reclamation;
 import com.project.entities.User;
 import com.project.request.ReclamationModel;
+import com.project.request.ReplyReclamation;
 import com.project.response.JSONResponse;
 import com.project.services.EmailSenderService;
 import com.project.services.ProjetService;
@@ -52,6 +53,16 @@ public class ReclamationRestController {
 		emailSenderService.sendEmail(client.getEmail(),"Complaint",message);
 		return  ResponseEntity.ok(reclamationService.add(reclamation));
 	}
+	
+	
+	@RequestMapping(path = "reply", method = RequestMethod.POST)
+	public ResponseEntity<?> reply(@RequestBody ReplyReclamation replyReclamation){
+		Reclamation r = reclamationService.findById(replyReclamation.getId());
+		r.setEtat(Etat.ClOTURE);
+		emailSenderService.sendEmail(r.getClient().getEmail(), "Solution " + r.getSujet(),replyReclamation.getReply());
+		return ResponseEntity.ok(reclamationService.update(r));
+	}
+	
 	
 	@RequestMapping(path = "update/status/{idReclamation}/{status}",method = RequestMethod.POST)
 	public ResponseEntity<?> updateStatus(@PathVariable("idReclamation") Long reclamationId, @PathVariable("status") String status){
@@ -176,6 +187,12 @@ public class ReclamationRestController {
 	@RequestMapping(path = "/details/personnel/status", method = RequestMethod.GET)
 	public ResponseEntity<?> detailsByDeveloppeurs(@RequestParam("status") String status){
 		return ResponseEntity.ok(reclamationService.totalByDeveloppeursAndEtat(status));
+	}
+	
+	@RequestMapping(path = "/details/client", method = RequestMethod.GET)
+	public ResponseEntity<?> detailsByClient(@RequestParam("username") String username){
+		User client = userService.findUserByUsername(username);
+		return ResponseEntity.ok(reclamationService.detailsByClient(client));
 	}
 	
 	@RequestMapping(path = "/details/personnel/status/dates", method = RequestMethod.GET)

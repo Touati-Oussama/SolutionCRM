@@ -50,6 +50,7 @@ public class MessageRestcontroller {
 			message.setInboxConversationId(m.getInboxConversation().getId());
 			message.setFromId((m.getFrom().getUser_id()));
 			message.setUserPhoto(m.getUserPhoto());
+			message.setFromName(m.getFrom().getNom() +" "+ m.getFrom().getPrenom());
 			lists.add(message);
 		});
 		return ResponseEntity.ok(lists);
@@ -64,7 +65,6 @@ public class MessageRestcontroller {
 		message.setInboxConversation(conversationRepository.findById(msg.getInboxConversationId()).get());
 		message.setMessage(msg.getMessage());
 		message.setUserPhoto(msg.getUserPhoto());
-		
 		InboxMessage m = messageRepository.save(message);
 		MessageResponsa mess = new MessageResponsa();
 		mess.setId(m.getId());

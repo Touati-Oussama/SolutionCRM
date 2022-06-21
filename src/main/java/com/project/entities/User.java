@@ -38,6 +38,7 @@ public class User {
 		private String telephone;
 		private String password;
 		private boolean enabled = true; 
+		private boolean connected;
 		
 		@JsonIgnore
 		@ManyToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
@@ -45,7 +46,7 @@ public class User {
 		 inverseJoinColumns = @JoinColumn(name="role_id"))
 		private List<Role> roles;
 		 
-		 @JsonIgnore
+		 	@JsonIgnore
 			@OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
 			@JoinColumn(referencedColumnName = "id")
 			private ImageDB image;
@@ -96,6 +97,12 @@ public class User {
 		
 		
 		
+		public boolean isConnected() {
+			return connected;
+		}
+		public void setConnected(boolean connected) {
+			this.connected = connected;
+		}
 		public String getEmail() {
 			return email;
 		}

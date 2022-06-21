@@ -44,7 +44,7 @@ public class TypeRestController {
 		{
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Cann not add this type.The name already exists!"));
+					.body(new JSONResponse("Echec d'ajout. Ce type de réclamation déja exist!"));
 		}
 		return ResponseEntity.ok(typeService.add(type));
 	}
@@ -56,7 +56,7 @@ public class TypeRestController {
 		{
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Cann not update this type.It contains complaints !"));
+					.body(new JSONResponse("Echec de modification.Ce type contient des réclamations !"));
 		}
 		TypeReclamation t = typeService.getTypeReclamation(id);
 		t.setType(type.getType());
@@ -71,7 +71,7 @@ public class TypeRestController {
 		{
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Cann not delete this type.It contains complaints "));
+					.body(new JSONResponse("Echec de suppression.Ce type contient des réclamations !"));
 		}
 		typeService.deleteTypeReclamation(id);
 		JSONResponse response = new JSONResponse("Type Supprimé !");

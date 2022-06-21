@@ -7,9 +7,11 @@ import com.project.entities.Etat;
 import com.project.entities.Reclamation;
 import com.project.entities.Societe;
 import com.project.entities.TypeReclamation;
+import com.project.entities.User;
 import com.project.request.ReclamationModel;
 import com.project.response.ReclamationDTO;
 import com.project.response.ReclamationDetails;
+import com.project.response.ReclamationDetailsClient;
 import com.project.response.ReclamationDetailsDev;
 import com.project.response.ReclamationDetailsParDev;
 import com.project.response.ReclamationDetailsType;
@@ -58,4 +60,5 @@ public interface ReclamationService {
 	List<ReclamationDetailsDev> totalByDeveloppeursAndDates(LocalDateTime date1,LocalDateTime date2);
 	List<ReclamationDetailsDev> totalByDeveloppeursAndEtat(String etat);
 	List<ReclamationDetailsDev> totalByDeveloppeursAndEtatAndDates(String etat,LocalDateTime date1,LocalDateTime date2);
+	ReclamationDetailsClient detailsByClient(User client);
 }

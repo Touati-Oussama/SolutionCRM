@@ -20,6 +20,7 @@ import com.project.request.ReclamationModel;
 import com.project.response.ProjetDTO;
 import com.project.response.ReclamationDTO;
 import com.project.response.ReclamationDetails;
+import com.project.response.ReclamationDetailsClient;
 import com.project.response.ReclamationDetailsDev;
 import com.project.response.ReclamationDetailsParDev;
 import com.project.response.ReclamationDetailsType;
@@ -1016,6 +1017,21 @@ public class ReclamationServiceImpl implements ReclamationService {
 				
 			});
 			return res;
+	}
+
+	@Override
+	public ReclamationDetailsClient detailsByClient(User client) {
+		// TODO Auto-generated method stub
+		ReclamationDetailsClient d = new ReclamationDetailsClient();
+		long total = reclamationRepository.totalByClient(client);
+		long attente = reclamationRepository.totalByClientByEtat(client, Etat.EN_ATTENTE);
+		long encours = reclamationRepository.totalByClientByEtat(client, Etat.EN_COURS);
+		long cloture = reclamationRepository.totalByClientByEtat(client, Etat.ClOTURE);
+		d.setTotal(total);
+		d.setAttente(attente);
+		d.setEncours(encours);
+		d.setCloture(cloture);
+		return d;
 	}
 
 

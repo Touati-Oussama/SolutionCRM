@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.method.P;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -78,6 +79,9 @@ public class userRestController {
 	ImageStorageService imageStorageService;
 	
 	@Autowired
+	BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+	@Autowired
 	private ImageStorageService storageService;
 	
 	@RequestMapping(path="add/admin",method = RequestMethod.POST)
@@ -120,34 +124,43 @@ public class userRestController {
 	@RequestMapping(path = "",method = RequestMethod.POST)
 	public ResponseEntity<?> updateStatus(@RequestParam("enabled") Boolean enabled, @RequestParam("id") Long id){
 		User user = userService.getUser(id);
+		System.out.println("#### le mot de passe est: " + user.getPassword() + " #######################");
 		if(user == null)
 			return null;
 		user.setEnabled(enabled);
-		
-		if (!enabled) {
-			Societe s = societeService.findByResponsable(user);
-			s.setResponsable(null);
-			societeService.saveSociete(s);
-			VerificationResponsable verif = verificationResponsableRepos.findByResponsable(user);
-			if (verif == null)
-				verif =  new VerificationResponsable();
-			verif.setResponsable(user);
-			verif.setSociete(s);
-			verificationResponsableRepos.save(verif);
-			
+		if(user.getSociete() != null) {
+			if (!enabled) {
+				Societe s = societeService.findByResponsable(user);
+				s.setResponsable(null);
+				societeService.saveSociete(s);
+				VerificationResponsable verif = verificationResponsableRepos.findByResponsable(user);
+				if (verif == null)
+					verif =  new VerificationResponsable();
+				verif.setResponsable(user);
+				verif.setSociete(s);
+				verificationResponsableRepos.save(verif);
+				
+			}
+			else {
+				VerificationResponsable verif = verificationResponsableRepos.findByResponsable(user);
+				Societe s = societeService.findSocieteByName(verif.getSociete().getname());
+				if (s.getResponsable() == null)
+					s.setResponsable(user);
+				else 
+					return ResponseEntity
+							.badRequest()
+							.body(new JSONResponse("Cette Soicete à déja un Responsable"));
+			}
 		}
-		else {
-			VerificationResponsable verif = verificationResponsableRepos.findByResponsable(user);
-			Societe s = societeService.findSocieteByName(verif.getSociete().getname());
-			if (s.getResponsable() == null)
-				s.setResponsable(user);
-			else 
-				return ResponseEntity
-						.badRequest()
-						.body(new JSONResponse("Cette Soicete à déja un Responsable"));
-		}
-		User usr = userService.saveUser(user);
+
+		User usr = userService.updateCompte(user);
 		return  ResponseEntity.ok(usr);
+	}
+	
+	
+	@RequestMapping(path = "/user",method = RequestMethod.POST)
+	public ResponseEntity<?> updateUserStatus(@RequestParam("connected") Boolean connected, @RequestParam("username") String username){
+		return ResponseEntity.ok(userService.updateUserStatus(username, connected));
 	}
 	
 	/**********************************************Customers*****************************************************/
@@ -156,11 +169,11 @@ public class userRestController {
 		if(userService.existsByUsername(user.getUsername()))
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Error: Username is already taken!"));
+					.body(new JSONResponse("Erreur: Username  est déja utilisé !"));
 		if(userService.existsByEmail(user.getEmail()))
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Error: Email is already taken!"));
+					.body(new JSONResponse("Error: Email est déja utilisé !"));
 			    
 		User newUser = new User();
 		newUser.setNom(user.getNom());
@@ -194,12 +207,13 @@ public class userRestController {
 	@RequestMapping(path="customers/update/{id}",method = RequestMethod.PUT)
 	public ResponseEntity<?> updateCustomer(@RequestBody ClientModel user,@PathVariable("id") Long id) {
 		User u = userService.getUser(id);
+		Boolean res = true;
 		if (u.getUsername().equals(user.getUsername()) == false)
 		{
 			if(userService.existsByUsername(user.getUsername()))
 				return ResponseEntity
 						.badRequest()
-						.body(new JSONResponse("Error: Username is already taken!"));
+						.body(new JSONResponse("Error: Username est déja utilisé !"));
 		}
 		
 		if(u.getEmail().equals(user.getEmail()) == false)
@@ -207,8 +221,10 @@ public class userRestController {
 			if(userService.existsByEmail(user.getEmail()))
 				return ResponseEntity
 						.badRequest()
-						.body(new JSONResponse("Error: Email is already taken!"));
+						.body(new JSONResponse("Error: Email est déja utilisé !"));
 		}
+		if (u.getPassword().equals(user.getPassword()))
+			res = false;
 		u.setNom(user.getNom());
 		u.setPrenom(user.getPrenom());
 		u.setUsername(user.getUsername());
@@ -220,7 +236,12 @@ public class userRestController {
 		//u.setSociete(societeService.getSociete(user.getSociete()));
 		String message = "Your new username is : " + user.getUsername() + "\n" + " Your neww password is: " + user.getPassword();
 		emailSenderService.sendEmail(user.getEmail(),"Solution CRM",message);
-		return ResponseEntity.ok(userService.saveUser(u));
+		User usr;
+		if (!res)
+			usr = userService.updateCompte(u);
+		else
+			usr = userService.saveUser(u);
+		return ResponseEntity.ok(usr);
 	}
 	
 	@RequestMapping(path="customers/delete/{id}",method = RequestMethod.DELETE)
@@ -229,7 +250,7 @@ public class userRestController {
 		if (res) {
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Impossible de supprimer cette user !. le client à des réclamations !"));
+					.body(new JSONResponse("Impossible de supprimer cette user !. le client a des réclamations !"));
 		}
 		userService.deleteUser(id);
 		JSONResponse response = new JSONResponse("Deleted User !");
@@ -241,7 +262,7 @@ public class userRestController {
 		List<User> oldUsers = userService.getAllUsers();
 		List<User> users = new ArrayList<User>();
 		oldUsers.forEach(user->{
-			UserDetails details = detailsService.loadUserByUsername(user.getUsername());
+			UserDetails details = detailsService.loadUserByUsername(user.getUsername(),"test");
 		    
 		    if ( 
 		    		details != null &&
@@ -274,6 +295,9 @@ public class userRestController {
 		
 		return customers;
 	}
+	
+	
+
 	
 	
 	@RequestMapping(path = "customers/all/filter",method = RequestMethod.GET)
@@ -394,11 +418,11 @@ public class userRestController {
 		if(userService.existsByUsername(user.getUsername()))
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Error: Username is already taken!"));
+					.body(new JSONResponse("Erreur: Username est déja utilisé !"));
 		if(userService.existsByEmail(user.getEmail()))
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Error: Email is already taken!"));
+					.body(new JSONResponse("Erreur: Email est déja utilisé "));
 		User newUser = new User();
 		newUser.setNom(user.getNom());
 		newUser.setPrenom(user.getPrenom());
@@ -445,20 +469,23 @@ public class userRestController {
 	@RequestMapping(path="teams/update/{id}",method = RequestMethod.PUT)
 	public ResponseEntity<?> updateCustomer(@RequestBody StaffModel newStaff,@PathVariable("id") Long id) {
 		User oldStaff = userService.getUser(id);
+		Boolean res = true;
 		if (oldStaff.getUsername().equals(newStaff.getUsername()) == false)
 		{
 			if(userService.existsByUsername(newStaff.getUsername()))
 				return ResponseEntity
 						.badRequest()
-						.body(new JSONResponse("Error: Username is already taken!"));
+						.body(new JSONResponse("Erreur: Username est déja utilisé !"));
 		}
 		if(oldStaff.getEmail().equals(newStaff.getEmail()) == false)
 		{
 			if(userService.existsByEmail(newStaff.getEmail()))
 				return ResponseEntity
 						.badRequest()
-						.body(new JSONResponse("Error: Email is already taken!"));
+						.body(new JSONResponse("Error: Email est déja utilisé !"));
 		}
+		if (oldStaff.getPassword().equals(newStaff.getPassword()))
+			res = false;
 		oldStaff.setNom(newStaff.getNom());
 		oldStaff.setPrenom(newStaff.getPrenom());
 		oldStaff.setUsername(newStaff.getUsername());
@@ -475,7 +502,12 @@ public class userRestController {
 		oldStaff.setSpecialities(tmp);
 		String message = "Your new username is : " + newStaff.getUsername() + "\n" + " Your neww password is: " + newStaff.getPassword();
 		emailSenderService.sendEmail(newStaff.getEmail(),"Solution CRM",message);
-		return ResponseEntity.ok(userService.saveUser(oldStaff));
+		User usr;
+		if (!res)
+			usr = userService.updateCompte(oldStaff);
+		else
+			usr = userService.saveUser(oldStaff);
+		return ResponseEntity.ok(usr);
 	}
 	
 	@RequestMapping(path = "all/teams",method = RequestMethod.GET)

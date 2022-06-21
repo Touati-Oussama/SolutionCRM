@@ -58,7 +58,7 @@ public class SpecialiteRestController {
 		if (res) {
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Cann not add this speciality. It's already exist !"));
+					.body(new JSONResponse("Echec d'ajout, Cette spécialité déja existe !"));
 		}
 		return ResponseEntity.ok(specialiteService.add(specialite));
 	}
@@ -70,7 +70,7 @@ public class SpecialiteRestController {
 		if (res || tmp.size() != 0) {
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Cann not update this speciality!"));
+					.body(new JSONResponse("Impossible de modifier cette spécialité"));
 		}
 		Sepicialite s = specialiteService.getSpecialite(id);
 		s.setNom(specialite.getNom());
@@ -85,7 +85,7 @@ public class SpecialiteRestController {
 		if (res || tmp.size() != 0) {
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Cann not delete this speciality!"));
+					.body(new JSONResponse("Impossible de supprimer cette spécialité"));
 		}
 		specialiteService.deleteSpecialite(id);
 		JSONResponse response = new JSONResponse("Spécialité Supprimé !");

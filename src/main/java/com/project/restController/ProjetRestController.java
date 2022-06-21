@@ -77,7 +77,7 @@ public class ProjetRestController {
 		{
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Cann not add this project.It's already exist !"));
+					.body(new JSONResponse("Echec d'ajout, Ce projet déja exist"));
 		}
 		
 		Projet p = new Projet();
@@ -95,7 +95,7 @@ public class ProjetRestController {
 		{
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Cann not update this project.It contain complaints !"));
+					.body(new JSONResponse("Echec de modification,Ce projet contient des réclamations"));
 		}
 		Projet p = projetService.getProjet(id);
 		p.setDesignation(projet.getDesignation());

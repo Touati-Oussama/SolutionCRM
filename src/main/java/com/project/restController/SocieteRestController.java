@@ -52,7 +52,7 @@ public class SocieteRestController {
 		{
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Cann not add this Society.It's already exist !"));
+					.body(new JSONResponse("Echec d'ajout, Cette société déja existe !"));
 		}
 		return ResponseEntity.ok(societeService.saveSociete(societe));
 	}
@@ -64,7 +64,7 @@ public class SocieteRestController {
 		{
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Cann not delete this Society.It has project(s) !"));
+					.body(new JSONResponse("Echec de suppression, Cette société contient des projet(s) !"));
 		}
 		societeService.deleteSociete(id);
 		JSONResponse response = new JSONResponse("Sociéte Supprimé !");
@@ -78,7 +78,7 @@ public class SocieteRestController {
 		{
 			return ResponseEntity
 					.badRequest()
-					.body(new JSONResponse("Cann not update this Society.It has project(s)!"));
+					.body(new JSONResponse("Echec de modification, Cette société contient des projet(s) !"));
 		}
 		Societe s = societeService.getSociete(id);	
 		s.setname(societe.getname());

@@ -14,11 +14,13 @@ import com.project.entities.User;
 public interface UserService {
 
 	User saveUser(User user);
+	User updateCompte(User user);
 	User findUserByUsername (String username);
 	Role addRole(Role role);
 	User addRoleToUser(String username, String rolename);
 	User saveClient(User user);
 	User updateUser(User user);
+	User updateUserStatus(String username, boolean status);
 	//User findUserByEmail(String email);
 	User getUser(Long id);
 	List<User>getAllUsers();
@@ -35,6 +37,7 @@ public interface UserService {
 	List<User> findByCustomersByFilter(String keyword);
 	List<StaffDTO> getAllEmployee();
 	List<User> getAllStaffs();
+	
 
 	
 }

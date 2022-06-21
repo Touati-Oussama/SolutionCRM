@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.LazyCollection;
@@ -30,13 +31,17 @@ public class InboxConversation {
 	  private String id;
 	
 	private String subject;
-	
+	private Long nbMsg = new Long(0);
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime startDate = LocalDateTime.now();
 	
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime lastModifiedDate = LocalDateTime.now();;
 	
+ 	@JsonIgnore
+	@OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
+	@JoinColumn(referencedColumnName = "id")
+	private Societe societe;
 	
 	@ManyToMany
 	@JoinTable(name="conversations_users",joinColumns = @JoinColumn(name="id") ,
@@ -70,6 +75,21 @@ public class InboxConversation {
 	}
 	public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+	
+	
+	
+	public Societe getSociete() {
+		return societe;
+	}
+	public void setSociete(Societe societe) {
+		this.societe = societe;
+	}
+	public Long getNbMsg() {
+		return nbMsg;
+	}
+	public void setNbMsg(Long nbMsg) {
+		this.nbMsg = nbMsg;
 	}
 	public void setParticipants(List<User> participants) {
 		this.participants = participants;

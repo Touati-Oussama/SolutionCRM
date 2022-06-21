@@ -25,6 +25,11 @@ public class UserServiceImpl implements UserService{
 	@Autowired
 	UserRepository userRep;
 	
+	
+	@Autowired
+	private WebSocketService webSocketService;
+	
+	
 	@Autowired
 	RoleRepository roleRepository;
 	@Autowired 
@@ -38,6 +43,14 @@ public class UserServiceImpl implements UserService{
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		return userRep.save(user);
 	}
+	
+	@Override
+	public User updateCompte(User user) {
+		// TODO Auto-generated method stub
+		return userRep.save(user);
+	}
+
+	
 	@Override
 	public User addRoleToUser(String username, String rolename) {
 		User usr = userRep.findByUsername(username);
@@ -220,5 +233,21 @@ public class UserServiceImpl implements UserService{
 		});
 		return users;
 	}
+	
+	
+	@Override
+	public User updateUserStatus(String username, boolean status) {
+		// TODO Auto-generated method stub
+		User user = this.findUserByUsername(username);
+		user.setConnected(status);
+		User u = userRep.save(user);
+		notifyFrontend("User Connection");
+		return u;
+	}
+	
+	
+	private void notifyFrontend(String entityTopic) {
+        webSocketService.sendMessage(entityTopic);
+    }
 
 }

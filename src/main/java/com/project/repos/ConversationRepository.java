@@ -6,4 +6,5 @@ import com.project.entities.InboxConversation;
 
 public interface ConversationRepository extends JpaRepository<InboxConversation, String> {
 
+	InboxConversation findBySubject(String subject);
 }
